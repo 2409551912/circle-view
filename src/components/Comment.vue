@@ -57,7 +57,6 @@
 </template>
 
 <script>
-    alert('sadf');
     import Common from '../assets/common.css'
     import Reset from '../assets/reset.css'
 
