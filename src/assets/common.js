@@ -50,7 +50,43 @@ var CommonJs = {
 
         return result;
 
-    }
+    },
+
+    //判断用户是否登录
+    isLogin:function(){
+        // $.get('http://123.249.54.19:8085/index/is_login', {
+
+        //     },
+        //     function (data, status) {
+        //         alert(2);
+        //             if (data.ret == 1) {
+
+        //                 Vue.$set("is_login", true)
+
+        //             } else {
+
+        //                 Vue.$set("is_login", false)
+                    
+        //             }
+        //         }, 'json'
+        //     )
+    },
+    setCookie:function(c_name,value,expiredays){
+            var exdate=new Date()
+            exdate.setDate(exdate.getDate()+expiredays)
+            document.cookie=c_name+ "=" +escape(value)+
+            ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+    },
+    getCookie:function(name){  
+        var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));  
+        if(arr != null){  
+         return unescape(arr[2]);   
+        }else{  
+         return null;  
+    }  
+} 
+
 }
+CommonJs.isLogin();
 
 module.exports = CommonJs;

@@ -90,9 +90,9 @@
     import Common from '../assets/common.css'
     import Reset from '../assets/reset.css'
 
-    import CommonJs from '../assets/common.js'
-
     import $ from 'jquery'
+
+    import CommonJs from '../assets/common.js'
 
     import Vue from 'vue'
 
