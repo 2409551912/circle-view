@@ -9,7 +9,15 @@
                 <div class="content">
                     {{l.content}}
                 </div>
-                <p class="interact"><span>热度(10)</span><span><a href="javascript:void(0)"class="reply" v-on:click="publishCommentInteract(index)">评论(1)</a></span><span>点赞 <i class="iconfont praise">&#xe601;</i></span></p>
+                <p class="interact">
+                    <span>热度({{l.hot}})</span>
+
+                    <span>
+                        <a href="javascript:void(0)"class="reply" v-on:click="publishCommentInteract(index)">评论({{l.comment_count}})</a>
+                    </span>
+
+                    <span>点赞 <i class="iconfont praise red" v-if="l.is_like">&#xe601;</i><i class="iconfont praise" v-else>&#xe601;</i></span>
+                </p>
             </div>
 
             <div class="reply-interact hid clearfix">
@@ -17,7 +25,7 @@
                 <div class="reply-box clearfix">
                     <input type="hidden" class="at-user">
                     <input type="text" class="reply-content" v-model="replyText">
-                    <a href="javascript:void(0)" class="publish" interact-id="{$interact->id}" v-on:click="publish">发布</a>
+                    <a href="javascript:void(0)" class="publish" interact-id="{$interact->id}" v-on:click="publish(1,l.id)">发布</a>
                 </div>
 
                 <ul class="reply-interact-box">
@@ -88,8 +96,7 @@
 
             },
 
-            publish: function () {
-
+            publish: function (interactType,interact_id) {
                 $.ajax({
 
                     type:"POST",
@@ -97,8 +104,8 @@
                     data:{
 
                         content:this.replyText,
-                        type:1,
-                        interact_id:this.interact_id,
+                        type:interactType,
+                        interact_id:interact_id,
                         at_user_id:this.at_user_id
 
                     },
@@ -302,6 +309,7 @@
         position: relative;
         left: 0rem;
         top: 0rem;
+        cursor: pointer;
     }
     .post-detail .item .comment .reply-interact{
         background: #fff;
@@ -575,21 +583,28 @@
         display: inline-block;
         line-height: 24px;
     }
-    /*.post-detail .comment-publish{*/
-    /*position: fixed;*/
-    /*top:0;*/
-    /*right: 0;*/
-    /*bottom: 0;*/
-    /*left: 0;*/
-    /*background: rgba(0,0,0,0.7);*/
-    /*}*/
 
-    /*.post-detail .comment-publish .outer{*/
-    /*margin-top: 8rem;*/
-    /*}*/
-    /*.post-detail .comment-publish .comment{*/
-    /*background-color: #fff;*/
-    /*height: 26rem;*/
-    /*padding: 1.5rem;*/
-    /*}*/
+    .post-detail .item .comment .interact .praise {
+        /*.post-detail .comment-publish{*/
+        /*position: fixed;*/
+        /*top:0;*/
+        /*right: 0;*/
+        /*bottom: 0;*/
+        /*left: 0;*/
+        /*background: rgba(0,0,0,0.7);*/
+        /*}*/
+
+        /*.post-detail .comment-publish .outer{*/
+        /*margin-top: 8rem;*/
+        /*}*/
+        /*.post-detail .comment-publish .comment{*/
+        /*background-color: #fff;*/
+        /*height: 26rem;*/
+        /*padding: 1.5rem;*/
+        /*}*/
+    }
+
+    .post-detail .item .comment .interact .red{
+        color:#f36868;
+    }
 </style>
