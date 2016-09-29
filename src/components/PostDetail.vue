@@ -44,7 +44,8 @@
                     <div class="post">
                         <p class="content">{{data.post.content}}</p>
                         <a href="javascript:void(0)" class="comment" id="p-comment" v-on:click="comment()">参与评论</a>
-                        <i class="iconfont praise">&#xe601;</i>
+                        <i class="iconfont praise red" v-if='data.is_like'>&#xe601;</i>
+                        <i class="iconfont praise" v-else>&#xe601;</i>
                     </div>
                     <div class="post-comment hid">
                         <form action="">
@@ -520,6 +521,7 @@
         top: 0.8rem;
         left: 2.5rem;
         color: #aaa;
+        cursor: pointer;
     }
     .post-detail .outer .post-comment{
         border-bottom: 1px solid #dfdfdf;
@@ -657,6 +659,11 @@
         float: right;
         display: inline-block;
         line-height: 24px;
+    }
+    .post-detail .outer .post .red{
+
+        color:#f36868;
+
     }
     /*.post-detail .comment-publish{*/
     /*position: fixed;*/
