@@ -152,7 +152,7 @@
             publishComment:function () {
 
                 var postId = this.$route.params.id;
-                
+
                 $.ajax({
 
                     type:"POST",
