@@ -23,8 +23,8 @@
             </span>    
 
             <span v-else>
-                <a href="javascript:void(0)" class="login" v-on:click="showLogin">登陆</a>
-                <a href="javascript:void(0)" class="register">注册</a>
+                <a href="javascript:void(0)" class="login" v-on:click="showLogin(1)">登陆</a>
+                <a href="javascript:void(0)" class="register" v-on:click="showLogin(0)">注册</a>
             </span>   
             
         </div>
@@ -140,28 +140,35 @@
         </div>
     </div>
 
-    <div class="login-mask" v-show="show_login">
-        <div class="login-box">
+    <div class="login-mask" v-show="show_login" v-on:click="hiddenLogin">
+        <div class="login-box" v-on:click="stopPropagation">
             <ul class="nav">
                 <li>
-                    <a href="javascript:void(0)" class="login">登陆</a>
+                    <a href="javascript:void(0)" class="login" v-on:click="showBox(1)" v-bind:class="{ 'main-color': !login_box }">登陆</a>
                 </li><li class="register">
-                <a href="javascript:void(0)">注册</a>
-            </li>
+                <a href="javascript:void(0)" v-on:click="showBox(0)" v-bind:class="{ 'main-color': login_box }">注册</a>
+                </li>
             </ul>
             <form action="" class="login-form">
-                <input type="text" placeholder="请输入账号" name="l-account" class="l-account" v-model="account">
-                <input type="password" placeholder="请输入密码" name="l-password" class="l-password" v-model="password">
-                <input type="button" value="登陆" id="login" v-on:click="login">
-            </form>
 
-            <form action="" class="register-form hid" method="post">
-                <input type="text" placeholder="请输入注册账号" name="r-account" class="r-account">
-                <input type="password" placeholder="请输入注册密码" name="r-password" class="r-password">
-                <input type="button" value="注册" id="register">
+
+                <template v-if="login_box">
+                    <input type="text" placeholder="请输入账号" name="l-account" class="l-account" v-model="account">
+                    <input type="password" placeholder="请输入密码" name="l-password" class="l-password" v-model="password">
+                    <input type="button" value="登陆" id="login" v-on:click="login">
+                </template>
+
+                <template v-else>
+                    <input type="text" placeholder="请输入注册账号" name="r-account" class="r-account" v-model="r_account">
+                    <input type="password" placeholder="请输入注册密码" name="r-password" class="r-password" v-model="r_password">
+                    <input type="button" value="注册" id="register" v-on:click="register">
+                </template>
+                
+            
             </form>
         </div>
     </div>
+
 </template>
 
 <script>
@@ -177,7 +184,10 @@
         show_login:false,
         account:'',
         password:'',
-        is_login:false
+        is_login:false,
+        login_box:1,
+        r_account:'',
+        r_password:''
     }
 
     export default {
@@ -189,10 +199,13 @@
             this.isLogin();
         },
         methods: {
-            showLogin: function () {
-                this.$set("show_login", true)
+            showLogin: function (boxType) {
+                this.$set("show_login", true);
+                this.$set("login_box", boxType);
             },
-
+            hiddenLogin: function(){
+                this.$set("show_login", false)
+            },
             login: function () {
 
                 var $this = this;
@@ -218,7 +231,24 @@
                     }, 'json'
                 )
             },
+            //注册
+            register:function(){
+                var $this = this;
+                $.post('http://123.249.54.19:8085/index/user/register', {
+                    account:this.r_account,
+                    password:this.r_password
 
+                },
+                function (data, status) {
+
+                        if (data.ret == 1) {
+
+                            $this.$set("login_box", 1);
+
+                        }
+                    }, 'json'
+                )
+            },
             //判断是否登陆
             isLogin: function () {
                 if (CommonJs.getCookie('bang_token')) {
@@ -232,11 +262,23 @@
                 }
             },
 
+            showBox: function (boxType) {
+                 this.$set('login_box',boxType);
+            },
+
+
             //退出
             exit:function () {
 
                 CommonJs.delCookie('bang_token');
+                CommonJs.delCookie('bang_account');
                 this.$set('is_login',false);
+            
+            },
+
+            //阻止冒泡
+            stopPropagation:function(event){
+                event.stopPropagation();
             }
         },
         compiled: function () {
@@ -314,25 +356,33 @@
         margin-top: -8rem;
     }
     .login-box .nav{
-        width: 90%;
         margin: 0 auto;
-        margin-top: 2rem;
     }
     .login-box .nav li{
         display: inline-block;
         width: 50%;
+    }
+    .login-box .nav li a{
+        color: #444;
+        display: inline-block;
+        width: 100%;
         text-align: center;
         vertical-align: top;
+        padding:1.4rem 0rem 1.4rem 0rem;
     }
     .login-box form{
         width: 80%;
         margin: 0 auto;
-        margin-top: 2rem;
+        margin-top: 1rem;
     }
     .login-box form input[type=text],
     .login-box form input[type=password]{
         width: 100%;
         margin-bottom: 1rem;
         padding: 0.5rem 0rem 0.5rem 0.2rem;
+    }
+    .login-box .nav li a.main-color{
+        background:rgba(154,198,0,0.8);
+        color: #fff;
     }
 </style>
