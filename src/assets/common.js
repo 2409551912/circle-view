@@ -72,21 +72,32 @@ var CommonJs = {
         //     )
     },
     setCookie:function(c_name,value,expiredays){
-            var exdate=new Date()
-            exdate.setDate(exdate.getDate()+expiredays)
-            document.cookie=c_name+ "=" +escape(value)+
-            ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+        var exdate=new Date()
+        exdate.setDate(exdate.getDate()+expiredays)
+        document.cookie=c_name+ "=" +escape(value)+
+        ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
     },
-    getCookie:function(name){  
+
+    getCookie:function(name){
+
         var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));  
         if(arr != null){  
-         return unescape(arr[2]);   
-        }else{  
-         return null;  
-    }  
+            return unescape(arr[2]);
+        }else {
+            return null;
+        }
+
+    },
+
+    delCookie:function(name){
+
+        var date = new Date();
+        date.setTime(date.getTime() - 10000);
+        document.cookie = name + "=a; expires=" + date.toGMTString();
+
+    }
 } 
 
-}
 CommonJs.isLogin();
 
 module.exports = CommonJs;

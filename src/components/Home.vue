@@ -13,7 +13,9 @@
             <span v-if="is_login">
                 <i class="iconfont personal">&#xe603;</i>
                 <a href="javascript:void(0)" id="changeNav">小小鸟</a>
-                <ul class="personal-nav hid">   
+
+                <a href="javascript:void(0)" v-on:click="exit">退出</a>
+                <ul class="personal-nav hid">
                     <li>    
                         <a href="/index/exit">退出</a>>   
                     </li>   
@@ -184,15 +186,7 @@
             return initData;
         },
         created:function(){
-            if (CommonJs.getCookie('user_id')) {
-       
-                this.$set('is_login',true);
-
-            }else{
-
-                this.$set('is_login',false);
-   
-            }
+            this.isLogin();
         },
         methods: {
             showLogin: function () {
@@ -212,10 +206,10 @@
                         if (data.ret == 1) {
 
                             $this.$set("show_login", false);
-                            $this.$set("is_login", true);
                             CommonJs.setCookie('bang_token',data.bang_token);
                             CommonJs.setCookie('bang_account',data.bang_account);
 
+                            $this.isLogin();
                         } else {
 
                             alert('密码错误');
@@ -223,6 +217,26 @@
                         }
                     }, 'json'
                 )
+            },
+
+            //判断是否登陆
+            isLogin: function () {
+                if (CommonJs.getCookie('bang_token')) {
+
+                    this.$set('is_login',true);
+
+                }else{
+
+                    this.$set('is_login',false);
+
+                }
+            },
+
+            //退出
+            exit:function () {
+
+                CommonJs.delCookie('bang_token');
+                this.$set('is_login',false);
             }
         },
         compiled: function () {
