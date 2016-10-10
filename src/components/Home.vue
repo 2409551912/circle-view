@@ -213,8 +213,8 @@
 
                             $this.$set("show_login", false);
                             $this.$set("is_login", true);
-                            CommonJs.setCookie('user_id',data.user_id);
-                            CommonJs.setCookie('username',data.username);
+                            CommonJs.setCookie('bang_token',data.bang_token);
+                            CommonJs.setCookie('bang_account',data.bang_account);
 
                         } else {
 
