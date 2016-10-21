@@ -1,38 +1,40 @@
 <template>
-    <div class="public-header">
-        <div class="box">
-            <div class="logo">圈 儿</div>
-            <div class="nav">
-                <ul>
-                    <li>首页</li>
-                </ul>
-            </div>
-        </div>
-        <div class="account">
-            
-            <span v-if="is_login">
-                <i class="iconfont personal">&#xe603;</i>
-                <a href="javascript:void(0)" id="changeNav">小小鸟</a>
 
-                <a href="javascript:void(0)" v-on:click="exit">退出</a>
-                <ul class="personal-nav hid">
-                    <li>    
-                        <a href="/index/exit">退出</a>>   
-                    </li>   
-                </ul>   
-            </span>    
+    <Header>fsadf</Header>
+    <!--<div class="public-header">-->
+        <!--<div class="box">-->
+            <!--<div class="logo">圈 儿</div>-->
+            <!--<div class="nav">-->
+                <!--<ul>-->
+                    <!--<li>首页</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="account">-->
+            <!---->
+            <!--<span v-if="is_login">-->
+                <!--<i class="iconfont personal">&#xe603;</i>-->
+                <!--<a href="javascript:void(0)" id="changeNav">{{username}}</a>-->
 
-            <span v-else>
-                <a href="javascript:void(0)" class="login" v-on:click="showLogin(1)">登陆</a>
-                <a href="javascript:void(0)" class="register" v-on:click="showLogin(0)">注册</a>
-            </span>   
-            
-        </div>
-        <a href="/index/post/publish" class="write">
-            <i class="iconfont">&#xe604;</i>
-        </a>
+                <!--<a href="javascript:void(0)" v-on:click="exit">退出</a>-->
+                <!--<ul class="personal-nav hid">-->
+                    <!--<li>    -->
+                        <!--<a href="/index/exit">退出</a>>   -->
+                    <!--</li>   -->
+                <!--</ul>   -->
+            <!--</span>    -->
 
-    </div>
+            <!--<span v-else>-->
+                <!--<a href="javascript:void(0)" class="login" v-on:click="showLogin(1)">登陆</a>-->
+                <!--<a href="javascript:void(0)" class="register" v-on:click="showLogin(0)">注册</a>-->
+            <!--</span>   -->
+            <!---->
+        <!--</div>-->
+        <!--<a v-link="{name: 'publish'}" class="write">-->
+            <!--<i class="iconfont">&#xe604;</i>-->
+        <!--</a>-->
+
+    <!--</div>-->
     <div class="module-wrap">
         <div id="header"></div>
         <div class="col0 col">
@@ -141,6 +143,7 @@
     </div>
 
     <div class="login-mask" v-show="show_login" v-on:click="hiddenLogin">
+
         <div class="login-box" v-on:click="stopPropagation">
             <ul class="nav">
                 <li>
@@ -153,20 +156,24 @@
 
 
                 <template v-if="login_box">
-                    <input type="text" placeholder="请输入账号" name="l-account" class="l-account" v-model="account">
-                    <input type="password" placeholder="请输入密码" name="l-password" class="l-password" v-model="password">
+                    <input type="text" placeholder="请输入账号" name="l-account" class="l-account" v-model="account" v-on:focus="removeHint">
+                    <input type="password" placeholder="请输入密码" name="l-password" class="l-password" v-model="password" v-on:focus="removeHint">
+                    <div class="hint" v-if="hint">{{hint}}</div>
                     <input type="button" value="登陆" id="login" v-on:click="login">
                 </template>
 
                 <template v-else>
                     <input type="text" placeholder="请输入注册账号" name="r-account" class="r-account" v-model="r_account">
+                    <input type="text" placeholder="请设置用户名" name="r-username" class="r-username" v-model="r_username">
                     <input type="password" placeholder="请输入注册密码" name="r-password" class="r-password" v-model="r_password">
+                    <div class="hint" v-if="hint">{{hint}}</div>
                     <input type="button" value="注册" id="register" v-on:click="register">
                 </template>
                 
             
             </form>
         </div>
+
     </div>
 
 </template>
@@ -176,6 +183,9 @@
     import Vue from 'vue'
     import CommonVue from './Common.vue'
     import CommonJs from '../assets/common.js'
+    import Header from './Header'
+    
+
 
 
     //初始化数据
@@ -187,7 +197,10 @@
         is_login:false,
         login_box:1,
         r_account:'',
-        r_password:''
+        r_password:'',
+        r_username:'',
+        username:'',
+        hint:''
     }
 
     export default {
@@ -197,6 +210,13 @@
         },
         created:function(){
             this.isLogin();
+            if(CommonJs.getCookie('username')){
+                this.$set('username',CommonJs.getCookie('username'));
+            }
+        },
+        components: {
+            // <my-component> 只能用在父组件模板内
+            'Header': Header
         },
         methods: {
             showLogin: function (boxType) {
@@ -219,13 +239,15 @@
                         if (data.ret == 1) {
 
                             $this.$set("show_login", false);
+                            $this.$set("username", data.body.user.username);
                             CommonJs.setCookie('bang_token',data.bang_token);
                             CommonJs.setCookie('bang_account',data.bang_account);
+                            CommonJs.setCookie('username',data.body.user.username);
 
                             $this.isLogin();
                         } else {
 
-                            alert('密码错误');
+                            $this.$set("hint", "账号密码错误");
                         
                         }
                     }, 'json'
@@ -236,7 +258,8 @@
                 var $this = this;
                 $.post('http://123.249.54.19:8085/index/user/register', {
                     account:this.r_account,
-                    password:this.r_password
+                    password:this.r_password,
+                    username:this.r_username
 
                 },
                 function (data, status) {
@@ -245,6 +268,8 @@
 
                             $this.$set("login_box", 1);
 
+                        }else{
+                            $this.$set("hint", "用户名已注册");
                         }
                     }, 'json'
                 )
@@ -264,6 +289,7 @@
 
             showBox: function (boxType) {
                  this.$set('login_box',boxType);
+                 this.removeHint();
             },
 
 
@@ -272,6 +298,7 @@
 
                 CommonJs.delCookie('bang_token');
                 CommonJs.delCookie('bang_account');
+                CommonJs.delCookie('username');
                 this.$set('is_login',false);
             
             },
@@ -279,6 +306,11 @@
             //阻止冒泡
             stopPropagation:function(event){
                 event.stopPropagation();
+            },
+            
+            //取消提示
+            removeHint:function () {
+                this.$set("hint", "");
             }
         },
         compiled: function () {
@@ -347,13 +379,14 @@
     }
     .login-box{
         width: 20rem;
-        height:14rem;
+        /*height:14rem;*/
         background: #fff;
         position: fixed;
         left: 50%;
         margin-left: -10rem;
         top: 50%;
         margin-top: -8rem;
+        padding-bottom: 1.5rem;
     }
     .login-box .nav{
         margin: 0 auto;
@@ -381,8 +414,20 @@
         margin-bottom: 1rem;
         padding: 0.5rem 0rem 0.5rem 0.2rem;
     }
+    .login-box form input[type=password]{
+        margin-bottom: 0.4rem;
+    }
+
+    .login-box form input[type=button]{
+        margin-top:0.4rem;
+    }
+
     .login-box .nav li a.main-color{
         background:rgba(154,198,0,0.8);
         color: #fff;
+    }
+    .login-box .hint{
+        color: #f71e1e;
+        font-size: 0.8rem;
     }
 </style>
